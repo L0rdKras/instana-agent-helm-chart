@@ -39,9 +39,9 @@ subjects:
 $ kubectl create -f tiller-service-account.yaml
 ```
 
-Install tiller to your cluster with 
+Install tiller to your cluster with
 
-```bash 
+```bash
 $ helm init --service-account tiller
 ```
 
@@ -101,24 +101,28 @@ $ helm del --purge instana-agent
 
 The following table lists the configurable parameters of the Instana chart and their default values.
 
-|             Parameter         |            Description                                                  |                    Default                |
-|-------------------------------|-------------------------------------------------------------------------|-------------------------------------------|
-| `instana.agent.key`           | Your Instana Agent key                                                  | `Nil` You must provide your own key       |
-| `image.name`                  | The image name to pull from                                             | `instana/agent`                           |
-| `image.tag`                   | The image tag to pull                                                   | `latest`                                  |
-| `image.pullPolicy`            | Image pull policy                                                       | `IfNotPresent`                            |
-| `rbac.create`                 | True/False create & use RBAC resources                                  | `true`                                    |
-| `instana.zone`                | Instana zone. It will be also used as cluster name and unique identifier| `k8s-cluster-name`                        |
-| `instana.leaderElectorPort`   | Instana leader elector sidecar port                                     | `42655`                                   |
-| `instana.agent.endpoint.host` | Instana agent backend endpoint host                                     | `saas-us-west-2.instana.io`               |
-| `instana.agent.endpoint.port` | Instana agent backend endpoint port                                     | `443`                                     |
-| `podAnnotations`              | Additional annotations to apply to the pod                              | `{}`                                      |
-| `instana.agent.proxyHost`     | Hostname/address of a proxy                                             | `nil`                                     |
-| `instana.agent.proxyPort`     | Port of a proxy                                                         | `nil`                                     |
-| `instana.agent.proxyProtocol` | Proxy protocol (Supported proxy types are "http", "socks4", "socks5")   | `nil`                                     |
-| `instana.agent.proxyUser`     | Username of the proxy auth                                              | `nil`                                     |
-| `instana.agent.proxyPassword` | Password of the proxy auth                                              | `nil`                                     |
-| `instana.agent.proxyUseDNS`   | Boolean if proxy also does DNS                                          | `nil`                                     |
+|             Parameter              |            Description                                                  |                    Default                |
+|------------------------------------|-------------------------------------------------------------------------|-------------------------------------------|
+| `instana.agent.key`                | Your Instana Agent key                                                  | `Nil` You must provide your own key       |
+| `image.name`                       | The image name to pull from                                             | `instana/agent`                           |
+| `image.tag`                        | The image tag to pull                                                   | `latest`                                  |
+| `image.pullPolicy`                 | Image pull policy                                                       | `IfNotPresent`                            |
+| `rbac.create`                      | True/False create & use RBAC resources                                  | `true`                                    |
+| `instana.zone`                     | Instana zone. It will be also used as cluster name and unique identifier| `k8s-cluster-name`                        |
+| `instana.leaderElectorPort`        | Instana leader elector sidecar port                                     | `42655`                                   |
+| `instana.agent.endpoint.host`      | Instana agent backend endpoint host                                     | `saas-us-west-2.instana.io`               |
+| `instana.agent.endpoint.port`      | Instana agent backend endpoint port                                     | `443`                                     |
+| `podAnnotations`                   | Additional annotations to apply to the pod                              | `{}`                                      |
+| `instana.agent.proxyHost`          | Hostname/address of a proxy                                             | `nil`                                     |
+| `instana.agent.proxyPort`          | Port of a proxy                                                         | `nil`                                     |
+| `instana.agent.proxyProtocol`      | Proxy protocol (Supported proxy types are "http", "socks4", "socks5")   | `nil`                                     |
+| `instana.agent.proxyUser`          | Username of the proxy auth                                              | `nil`                                     |
+| `instana.agent.proxyPassword`      | Password of the proxy auth                                              | `nil`                                     |
+| `instana.agent.proxyUseDNS`        | Boolean if proxy also does DNS                                          | `nil`                                     |
+| `computeResources.requests.memory` | Container memory requests in MiB                                        | `512`                                     |
+| `computeResources.requests.cpu`    | Container cpu requests in cpu cores                                     | `0.5`                                     |
+| `computeResources.limits.memory`   | Container memory limits in MiB                                          | `512`                                     |
+| `computeResources.limits.cpu`      | Container cpu limits in cpu cores                                       | `1.5`                                     |
 
 ### Agent
 

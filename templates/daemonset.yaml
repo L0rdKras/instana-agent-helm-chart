@@ -62,6 +62,8 @@ spec:
             - name: INSTANA_AGENT_PROXY_USE_DNS
               value: {{ .Values.instana.agent.proxyUseDNS | quote }}
             {{- end }}
+            - name: JAVA_OPTS
+              value: "-Xmx{{ div .Values.computeResources.requests.memory 3 }}M -XX:+ExitOnOutOfMemoryError"
           securityContext:
             privileged: true
           volumeMounts:
@@ -79,30 +81,18 @@ spec:
               subPath: configuration.yaml
               mountPath: /root/configuration.yaml
           livenessProbe:
-            exec:
-              command:
-                - echo
-                - noop
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 5
-          readinessProbe:
-            exec:
-              command:
-                - echo
-                - noop
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 5
+            httpGet:
+              path: /status
+              port: 42699
+            initialDelaySeconds: 75
+            periodSeconds: 5
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "0.5"
+              memory: "{{ .Values.computeResources.requests.memory }}Mi"
+              cpu: {{ .Values.computeResources.requests.cpu }}
             limits:
-              memory: "512Mi"
-              cpu: "1.5"
+              memory: "{{ .Values.computeResources.limits.memory }}Mi"
+              cpu: {{ .Values.computeResources.limits.cpu }}
         - name: {{ .Values.instana.agent.name }}-leader-elector
           image: gcr.io/google-containers/leader-elector:0.5
           args: ["--election=instana", "--http=0.0.0.0:{{ .Values.instana.leaderElectorPort }}"]
@@ -112,20 +102,10 @@ spec:
               memory: 64Mi
           livenessProbe:
             httpGet:
-              path: /
-              port: {{ .Values.instana.leaderElectorPort }}
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 10
-            failureThreshold: 5
-          readinessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.instana.leaderElectorPort }}
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 10
-            failureThreshold: 5
+              path: /status
+              port: 42699
+            initialDelaySeconds: 75
+            periodSeconds: 5
       volumes:
         - name: dev
           hostPath:

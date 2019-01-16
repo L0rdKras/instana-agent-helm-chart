@@ -18,3 +18,11 @@ instana:
 
 ## Annotations to be added to pods
 podAnnotations: {}
+
+computeResources:
+  requests:
+    memory: 512 # memory requests in MiB
+    cpu: 0.5
+  limits:
+    memory: 512 # memory limits in MiB
+    cpu: 1.5
