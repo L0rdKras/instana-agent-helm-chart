@@ -40,5 +40,5 @@ rules:
 - apiGroups: [""]
   resources:
     - "endpoints"
-  verbs: ["create", "update"]
+  verbs: ["create", "update", "patch"]
 {{- end -}}
