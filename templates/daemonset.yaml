@@ -62,9 +62,9 @@ spec:
             - name: INSTANA_AGENT_PROXY_USE_DNS
               value: {{ .Values.instana.agent.proxyUseDNS | quote }}
             {{- end }}
-            {{- if .Values.instana.agent.http.listen }}
+            {{- if .Values.instana.agent.httpListen }}
             - name: INSTANA_AGENT_HTTP_LISTEN
-              value: {{ .Values.instana.agent.http.listen | quote }}
+              value: {{ .Values.instana.agent.httpListen | quote }}
             {{- end }}
             - name: JAVA_OPTS
               value: "-Xmx{{ div .Values.computeResources.requests.memory 3 }}M -XX:+ExitOnOutOfMemoryError"

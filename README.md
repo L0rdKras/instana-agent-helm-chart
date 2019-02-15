@@ -66,7 +66,7 @@ Optionally, if your infrastructure uses a proxy, you should ensure that you set 
 Optionally, if your infrastructure has multiple networks defined, might need to allow the agent listening on all
 addresses (typically with value set to '*'):
 
-* instana.agent.http.listen
+* instana.agent.httpListen
 
 Check the values for the endpoint entries in the [agent backend configuration](https://docs.instana.io/quick_start/agent_configuration/#backend).
 
@@ -84,7 +84,7 @@ $ helm install . --name instana-agent --namespace instana-agent \
 --set instana.agent.proxyUser=INSTANA_AGENT_PROXY_USER \
 --set instana.agent.proxyPassword=INSTANA_AGENT_PROXY_PASSWORD \
 --set instana.agent.proxyUseDNS=INSTANA_AGENT_PROXY_USE_DNS \
---set instana.agent.http.listen=INSTANA_AGENT_HTTP_LISTEN
+--set instana.agent.httpListen=INSTANA_AGENT_HTTP_LISTEN
 ```
 
 To install the chart with the release name `instana-agent` after editing the **values.yaml** file, run:
@@ -125,7 +125,7 @@ The following table lists the configurable parameters of the Instana chart and t
 | `instana.agent.proxyUser`          | Username of the proxy auth                                              | `nil`                                     |
 | `instana.agent.proxyPassword`      | Password of the proxy auth                                              | `nil`                                     |
 | `instana.agent.proxyUseDNS`        | Boolean if proxy also does DNS                                          | `nil`                                     |
-| `instana.agent.http.listen`        | List of addresses to listen on, or "*" for all interfaces               | `nil`                                     |
+| `instana.agent.httpListen`         | List of addresses to listen on, or "*" for all interfaces               | `nil`                                     |
 | `computeResources.requests.memory` | Container memory requests in MiB                                        | `512`                                     |
 | `computeResources.requests.cpu`    | Container cpu requests in cpu cores                                     | `0.5`                                     |
 | `computeResources.limits.memory`   | Container memory limits in MiB                                          | `512`                                     |
