@@ -19,6 +19,10 @@ instana:
 ## Annotations to be added to pods
 podAnnotations: {}
 
+## Tolerations for pod assignment
+### Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+tolerations: []
+
 computeResources:
   requests:
     memory: 512 # memory requests in MiB

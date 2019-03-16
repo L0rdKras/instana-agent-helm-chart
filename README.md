@@ -119,6 +119,7 @@ The following table lists the configurable parameters of the Instana chart and t
 | `instana.agent.endpoint.host`      | Instana agent backend endpoint host                                     | `saas-us-west-2.instana.io`               |
 | `instana.agent.endpoint.port`      | Instana agent backend endpoint port                                     | `443`                                     |
 | `podAnnotations`                   | Additional annotations to apply to the pod                              | `{}`                                      |
+| `tolerations`                      | Tolerations for pod assignment                                          | `[]`                                      |
 | `instana.agent.proxyHost`          | Hostname/address of a proxy                                             | `nil`                                     |
 | `instana.agent.proxyPort`          | Port of a proxy                                                         | `nil`                                     |
 | `instana.agent.proxyProtocol`      | Proxy protocol (Supported proxy types are "http", "socks4", "socks5")   | `nil`                                     |
