@@ -119,6 +119,10 @@ spec:
               port: 42699
             initialDelaySeconds: 75
             periodSeconds: 5
+{{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8}}
+{{- end }}
       volumes:
         - name: dev
           hostPath:
