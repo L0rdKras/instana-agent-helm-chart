@@ -101,10 +101,10 @@ spec:
             periodSeconds: 5
           resources:
             requests:
-              memory: "{{ int .Values.agent.pod.requests.memory | default 512 }}Mi"
+              memory: "{{ default 512 .Values.agent.pod.requests.memory }}Mi"
               cpu: {{ default 0.5 .Values.agent.pod.requests.cpu }}
             limits:
-              memory: "{{ int .Values.agent.pod.limits.memory | default 512 }}Mi"
+              memory: "{{ default 512 .Values.agent.pod.limits.memory }}Mi"
               cpu: {{ default 1.5 .Values.agent.pod.limits.cpu }}
         - name: {{ template "instana-agent.baseName" . }}-leader-elector
           image: gcr.io/google-containers/leader-elector:0.5
