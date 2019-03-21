@@ -1,10 +1,10 @@
-{{- if .Values.rbac.create -}}
+{{- if .Values.rbac.clusterRole.create -}}
 kind: ClusterRole
-apiVersion: {{ template "rbac.apiVersion" . }}
+apiVersion: {{ template "instana-agent.rbacApiVersion" . }}
 metadata:
-  name: {{ .Values.instana.agent.name }}-role
+  name: {{ template "instana-agent.baseName" . }}-role
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    {{- include "instana-agent.helmChartLabels" . | nindent 4 }}
 rules:
 - nonResourceURLs:
     - "/version"

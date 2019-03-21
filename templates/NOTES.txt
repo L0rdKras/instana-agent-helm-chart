@@ -1,0 +1,39 @@
+{{- if .Values.agent.key }}
+{{- if not .Values.zone.name }}
+##############################################################################
+####    ERROR: You did not specify a zone name for this cluster.          ####
+##############################################################################
+
+This agent deployment will be incomplete until you set a zone name for this cluster:
+
+    helm upgrade {{ .Release.Name }} \
+        --set zone.name=$(YOUR_CLUSTER_NAME) {{ .Chart.Name }}
+{{- else -}}
+It may take a few moments for the agents to fully deploy. You can see what agents are running by listing resources in the {{ .Release.Namespace }} namespace:
+
+    kubectl get all -n {{ .Release.Namespace }}
+
+You can get the logs for all of the agents with `kubectl logs` (assumes you also have the `jq` JSON utility [1]):
+
+    kubectl logs -f pod/`kubectl get po -n {{ .Release.Namespace }} -o json | jq -r '.items[0].metadata.name'` -n {{ .Release.Namespace }} -c instana-agent
+
+[1] - https://stedolan.github.io/jq/
+{{- end }}
+{{- else -}}
+##############################################################################
+####    ERROR: You did not specify your secret agent key.                 ####
+{{- if not .Values.zone.name }}
+####    ERROR: You also did not specify a zone name for this cluster.     ####
+{{- end }}
+##############################################################################
+
+This agent deployment will be incomplete until you set your agent key:
+
+    helm upgrade {{ .Release.Name }} \
+        --set agent.key=$(YOUR_SECRET_KEY) {{- if not .Values.zone.name }} \
+        --set zone.name=$(YOUR_CLUSTER_NAME) {{ .Chart.Name }}
+
+- YOUR_SECRET_KEY can be obtained from the Management Portal section of your Instana installation.
+- YOUR_CLUSTER_NAME should be a name that uniquely identifies this cluster.
+{{- end }}
+{{- end }}

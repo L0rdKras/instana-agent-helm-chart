@@ -1,4 +1,9 @@
-name: instana-agent
-version: 1.0.3
+name: instana-agent-helm-chart
+version: 1.0.4
 description: Instana Agent for Kubernetes
 home: https://www.instana.com/
+sources:
+  - https://github.com/instana/instana-agent-docker
+maintainers:
+  - name: jbrisbin
+    email: jon.brisbin@instana.com

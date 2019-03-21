@@ -1,73 +1,78 @@
-{{- if .Values.instana.agent.key -}}
-{{- if .Values.instana.zone -}}
+{{- if .Values.agent.key -}}
+{{- if .Values.zone.name -}}
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
-  name: {{ .Values.instana.agent.name }}
+  name: {{ template "instana-agent.baseName" . }}
   labels:
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    {{- include "instana-agent.helmChartLabels" . | nindent 4 }}
 spec:
   template:
     metadata:
       labels:
-        app: {{ .Values.instana.agent.name }}
-{{- if .Values.podAnnotations }}
+        k8s.instana.io/name: {{ template "instana-agent.baseName" . }}
+{{- if .Values.agent.pod.annotations }}
       annotations:
-{{ toYaml .Values.podAnnotations | indent 8}}
+{{ toYaml .Values.agent.pod.annotations | indent 8}}
 {{- end }}
     spec:
-      serviceAccount: {{ .Values.instana.agent.name }}
+      serviceAccount: {{ template "instana-agent.serviceAccount" . }}
       hostIPC: true
       hostNetwork: true
       hostPID: true
       containers:
-        - name: {{ .Values.instana.agent.name }}
-          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: {{ template "instana-agent.baseName" . }}
+{{- if .Values.agent.image }}
+          image: "{{ .Values.agent.image.name }}:{{ .Values.agent.image.tag }}"
+          imagePullPolicy: {{ .Values.agent.image.pullPolicy }}
+{{- else -}}
+          image: "instana/agent:latest"
+          imagePullPolicy: IfNotPresent
+{{- end }}
           env:
             - name: INSTANA_AGENT_LEADER_ELECTOR_PORT
-              value: {{ .Values.instana.leaderElectorPort | quote }}
+              value: {{ int .Values.agent.leaderElectorPort | quote }}
             - name: INSTANA_ZONE
-              value: {{ .Values.instana.zone | quote }}
+              value: {{ .Values.zone.name | quote }}
             - name: INSTANA_AGENT_ENDPOINT
-              value: {{ .Values.instana.agent.endpoint.host | quote }}
+              value: {{ .Values.agent.endpointHost | quote }}
             - name: INSTANA_AGENT_ENDPOINT_PORT
-              value: {{ .Values.instana.agent.endpoint.port | quote }}
+              value: {{ int .Values.agent.endpointPort | quote }}
             - name: INSTANA_AGENT_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.instana.agent.name }}-secret
+                  name: {{ template "instana-agent.baseName" . }}-secret
                   key: key
-            {{- if .Values.instana.agent.proxyHost }}
+            {{- if .Values.agent.proxyHost }}
             - name: INSTANA_AGENT_PROXY_HOST
-              value: {{ .Values.instana.agent.proxyHost | quote }}
+              value: {{ .Values.agent.proxyHost | quote }}
             {{- end }}
-            {{- if .Values.instana.agent.proxyPort }}
+            {{- if .Values.agent.proxyPort }}
             - name: INSTANA_AGENT_PROXY_PORT
-              value: {{ .Values.instana.agent.proxyPort | quote }}
+              value: {{ .Values.agent.proxyPort | quote }}
             {{- end }}
-            {{- if .Values.instana.agent.proxyProtocol }}
+            {{- if .Values.agent.proxyProtocol }}
             - name: INSTANA_AGENT_PROXY_PROTOCOL
-              value: {{ .Values.instana.agent.proxyProtocol | quote }}
+              value: {{ .Values.agent.proxyProtocol | quote }}
             {{- end }}
-            {{- if .Values.instana.agent.proxyUser }}
+            {{- if .Values.agent.proxyUser }}
             - name: INSTANA_AGENT_PROXY_USER
-              value: {{ .Values.instana.agent.proxyUser | quote }}
+              value: {{ .Values.agent.proxyUser | quote }}
             {{- end }}
-            {{- if .Values.instana.agent.proxyPassword }}
+            {{- if .Values.agent.proxyPassword }}
             - name: INSTANA_AGENT_PROXY_PASSWORD
-              value: {{ .Values.instana.agent.proxyPassword | quote }}
+              value: {{ .Values.agent.proxyPassword | quote }}
             {{- end }}
-            {{- if .Values.instana.agent.proxyUseDNS }}
+            {{- if .Values.agent.proxyUseDNS }}
             - name: INSTANA_AGENT_PROXY_USE_DNS
-              value: {{ .Values.instana.agent.proxyUseDNS | quote }}
+              value: {{ .Values.agent.proxyUseDNS | quote }}
             {{- end }}
-            {{- if .Values.instana.agent.httpListen }}
+            {{- if .Values.agent.listenAddress }}
             - name: INSTANA_AGENT_HTTP_LISTEN
-              value: {{ .Values.instana.agent.httpListen | quote }}
+              value: {{ .Values.agent.listenAddress | quote }}
             {{- end }}
             - name: JAVA_OPTS
-              value: "-Xmx{{ div .Values.computeResources.requests.memory 3 }}M -XX:+ExitOnOutOfMemoryError"
+              value: "-Xmx{{ div (default 512 .Values.agent.pod.requests.memory) 3 }}M -XX:+ExitOnOutOfMemoryError"
             - name: INSTANA_AGENT_POD_NAME
               valueFrom:
                 fieldRef:
@@ -96,19 +101,19 @@ spec:
             periodSeconds: 5
           resources:
             requests:
-              memory: "{{ .Values.computeResources.requests.memory }}Mi"
-              cpu: {{ .Values.computeResources.requests.cpu }}
+              memory: "{{ int .Values.agent.pod.requests.memory | default 512 }}Mi"
+              cpu: {{ default 0.5 .Values.agent.pod.requests.cpu }}
             limits:
-              memory: "{{ .Values.computeResources.limits.memory }}Mi"
-              cpu: {{ .Values.computeResources.limits.cpu }}
-        - name: {{ .Values.instana.agent.name }}-leader-elector
+              memory: "{{ int .Values.agent.pod.limits.memory | default 512 }}Mi"
+              cpu: {{ default 1.5 .Values.agent.pod.limits.cpu }}
+        - name: {{ template "instana-agent.baseName" . }}-leader-elector
           image: gcr.io/google-containers/leader-elector:0.5
           env:
             - name: INSTANA_AGENT_POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          args: ["--election=instana", "--http=0.0.0.0:{{ .Values.instana.leaderElectorPort }}", "--id=$(INSTANA_AGENT_POD_NAME)"]
+          args: ["--election=instana", "--http=0.0.0.0:{{ default 42655 .Values.agent.leaderElectorPort }}", "--id=$(INSTANA_AGENT_POD_NAME)"]
           resources:
             requests:
               cpu: 0.1
@@ -119,9 +124,9 @@ spec:
               port: 42699
             initialDelaySeconds: 75
             periodSeconds: 5
-{{- if .Values.tolerations }}
+{{- if .Values.agent.pod.schedulerTolerations }}
       tolerations:
-{{ toYaml .Values.tolerations | indent 8}}
+{{ toYaml .Values.agent.pod.schedulerTolerations | indent 8}}
 {{- end }}
       volumes:
         - name: dev
@@ -141,6 +146,6 @@ spec:
             path: /etc/machine-id
         - name: configuration
           configMap:
-            name: instana-configuration
+            name: {{ template "instana-agent.baseName" . }}-configuration
 {{- end -}}
 {{- end -}}
